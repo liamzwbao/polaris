@@ -258,10 +258,6 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
                 .setStorageConfigurationInfo(storageConfigModel, storageLocation)
                 .build());
 
-    PolarisPassthroughResolutionView passthroughView =
-        new PolarisPassthroughResolutionView(
-            callContext, entityManager, securityContext, CATALOG_NAME);
-    TaskExecutor taskExecutor = Mockito.mock();
     RealmEntityManagerFactory realmEntityManagerFactory =
         new RealmEntityManagerFactory(createMockMetaStoreManagerFactory());
     this.fileIOFactory =
@@ -285,18 +281,10 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
         .thenReturn((PolarisStorageIntegration) storageIntegration);
 
     this.catalog =
-        new BasePolarisCatalog(
-            entityManager,
-            metaStoreManager,
-            callContext,
-            passthroughView,
-            securityContext,
-            taskExecutor,
-            fileIOFactory);
-    this.catalog.initialize(
-        CATALOG_NAME,
-        ImmutableMap.of(
-            CatalogProperties.FILE_IO_IMPL, "org.apache.iceberg.inmemory.InMemoryFileIO"));
+        initCatalog(
+            CATALOG_NAME,
+            ImmutableMap.of(
+                CatalogProperties.FILE_IO_IMPL, "org.apache.iceberg.inmemory.InMemoryFileIO"));
   }
 
   @AfterEach
@@ -308,6 +296,26 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
   @Override
   protected BasePolarisCatalog catalog() {
     return catalog;
+  }
+
+  @Override
+  protected BasePolarisCatalog initCatalog(
+      String catalogName, Map<String, String> additionalProperties) {
+    PolarisPassthroughResolutionView passthroughView =
+        new PolarisPassthroughResolutionView(
+            callContext, entityManager, securityContext, CATALOG_NAME);
+    TaskExecutor taskExecutor = Mockito.mock();
+    BasePolarisCatalog basePolarisCatalog =
+        new BasePolarisCatalog(
+            entityManager,
+            metaStoreManager,
+            callContext,
+            passthroughView,
+            securityContext,
+            taskExecutor,
+            fileIOFactory);
+    basePolarisCatalog.initialize(CATALOG_NAME, additionalProperties);
+    return basePolarisCatalog;
   }
 
   @Override
