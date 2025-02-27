@@ -212,6 +212,8 @@ public class BasePolarisCatalog extends BaseMetastoreViewCatalog
         name,
         this.catalogName);
 
+    catalogProperties = properties;
+
     // Base location from catalogEntity is primary source of truth, otherwise fall through
     // to the same key from the properties map, and finally fall through to WAREHOUSE_LOCATION.
     String baseLocation =
@@ -258,7 +260,6 @@ public class BasePolarisCatalog extends BaseMetastoreViewCatalog
     closeableGroup.addCloseable(metricsReporter());
     closeableGroup.setSuppressCloseFailure(true);
 
-    catalogProperties = properties;
     tableDefaultProperties =
         PropertyUtil.propertiesWithPrefix(properties, CatalogProperties.TABLE_DEFAULT_PREFIX);
 
