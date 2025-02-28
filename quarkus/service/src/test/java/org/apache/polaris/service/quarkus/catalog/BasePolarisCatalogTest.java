@@ -59,7 +59,6 @@ import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.TableMetadataParser;
 import org.apache.iceberg.catalog.CatalogTests;
 import org.apache.iceberg.catalog.Namespace;
-import org.apache.iceberg.catalog.SupportsNamespaces;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.AlreadyExistsException;
 import org.apache.iceberg.exceptions.BadRequestException;
@@ -174,7 +173,6 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
   private BasePolarisCatalog catalog;
   private CallContext callContext;
   private AwsStorageConfigInfo storageConfigModel;
-  private StsClient stsClient;
   private String realmName;
   private PolarisMetaStoreManager metaStoreManager;
   private PolarisCallContext polarisContext;
@@ -377,7 +375,18 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
 
   @Test
   @Override
+  public void listNamespacesWithEmptyNamespace() {
+    // Skip this test because Polaris handles empty namespaces differently than the superclass
+    // expectation.
+    Assumptions.assumeTrue(supportsEmptyNamespace());
+    super.listNamespacesWithEmptyNamespace();
+  }
+
+  @Test
+  @Override
   public void createAndDropEmptyNamespace() {
+    // Skip this test because AssertJ's Assumptions.assumeThat() is not compatible with Quarkus.
+    // This test can be removed once Quarkus supports AssertJ or Polaris supports empty namespaces.
     Assumptions.assumeTrue(supportsEmptyNamespace());
     super.createAndDropEmptyNamespace();
   }
@@ -385,6 +394,8 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
   @Test
   @Override
   public void namespacePropertiesOnEmptyNamespace() {
+    // Skip this test because AssertJ's Assumptions.assumeThat() is not compatible with Quarkus.
+    // This test can be removed once Quarkus supports AssertJ or Polaris supports empty namespaces.
     Assumptions.assumeTrue(supportsEmptyNamespace());
     super.namespacePropertiesOnEmptyNamespace();
   }
@@ -392,6 +403,8 @@ public class BasePolarisCatalogTest extends CatalogTests<BasePolarisCatalog> {
   @Test
   @Override
   public void listTablesInEmptyNamespace() {
+    // Skip this test because AssertJ's Assumptions.assumeThat() is not compatible with Quarkus.
+    // This test can be removed once Quarkus supports AssertJ or Polaris supports empty namespaces.
     Assumptions.assumeTrue(supportsEmptyNamespace());
     super.listTablesInEmptyNamespace();
   }
